@@ -5,14 +5,21 @@ import Subscription from '../models/Subscription.js';
 // Helper function to fetch a subscription without auth check.
 // Used by the workflow controller.
 export const findSubscriptionById = async (id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new Error(`Invalid subscription ID: ${id}`);
+    //adding try and catch block for better error handling 
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new Error(`Invalid subscription ID: ${id}`);
+    }
+    const subscription = await Subscription.findById(id);
+    if (!subscription) {
+      throw new Error('Subscription not found');
+    }
+    return subscription;
+  } catch (error) {
+    console.error('Error fetching subscription:', error.message);
+    throw new Error('Failed to fetch subscription');
+    
   }
-  const subscription = await Subscription.findById(id);
-  if (!subscription) {
-    throw new Error('Subscription not found');
-  }
-  return subscription;
 };
 
 // GET subscription by ID (with auth check)
